@@ -1,0 +1,41 @@
+
+import edu.princeton.cs.algs4.*;
+public class PercolationStats {
+
+double[] results=null;
+
+	public PercolationStats(int n, int trials)throws IllegalArgumentException{    // perform trials independent experiments on an n-by-n grid
+		if(n<=0||trials<=0){
+			throw new IllegalArgumentException();
+		}
+		results=new double[trials];
+		int i=0;
+		while(i<trials){
+			Percolation p=new Percolation(n);
+			results[i]=p.test();
+			//System.out.println(results[i]);
+			i++;
+		}
+	}
+	public double mean(){                          // sample mean of percolation threshold
+		return  StdStats.mean(results);
+	}
+	public double stddev(){                        // sample standard deviation of percolation threshold
+		return StdStats.stddev(results);
+	}
+	public double confidenceLo() {                 // low  endpoint of 95% confidence interval
+		return this.mean()-1.96*Math.sqrt(this.stddev()/this.results.length);
+	}
+	public double confidenceHi() {                 // high endpoint of 95% confidence interval
+		return this.mean()+1.96*Math.sqrt(this.stddev()/this.results.length);
+	}
+
+	public static void main(String[] args){        // test client (described below)
+		PercolationStats pp=new PercolationStats(50, 50);
+		StdOut.println("means= "+pp.mean());
+		StdOut.println("stddv= "+pp.stddev());
+		StdOut.println("95% confidence interval= ["+pp.confidenceLo()+", "+pp.confidenceHi()+"]");
+		
+	}
+
+}
