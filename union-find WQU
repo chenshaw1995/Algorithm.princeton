@@ -1,0 +1,120 @@
+import edu.princeton.cs.algs4.*;
+public class Percolation {
+
+	int[][] grids;
+	int DIMENSION;
+	int OPEN;
+	WeightedQuickUnionUF WQU;
+	
+	public Percolation(int n) throws IllegalArgumentException {
+		if(n<=0)throw new IllegalArgumentException();
+		DIMENSION=n;
+		OPEN=0;
+		grids=new int[DIMENSION][DIMENSION];
+		WQU=new WeightedQuickUnionUF(DIMENSION*DIMENSION+1);
+		//int num=1;
+		for(int i=0; i<DIMENSION;i++){
+			for(int l=0; l<DIMENSION;l++){
+				grids[i][l]=-1;
+			}
+		}
+		// create n-by-n grid, with all sites blocked
+	}
+	   public    void open(int row, int col) throws IllegalArgumentException{    // open site (row, col) if it is not open already
+		  if(row>0&&row<=DIMENSION&&col>0&&col<=DIMENSION){
+			  grids[row-1][col-1]=0;
+			  OPEN++;
+			  if(row==1)WQU.union(0, row+col*DIMENSION-DIMENSION);
+			  if(row>1){
+				  if(this.isOpen(row-1, col))WQU.union(row+col*DIMENSION-DIMENSION, row+col*DIMENSION-1-DIMENSION);
+			  }
+			  if(row<DIMENSION){
+				  if(this.isOpen(row+1, col))WQU.union(row+col*DIMENSION-DIMENSION, row+col*DIMENSION+1-DIMENSION);
+			  }
+			  if(col>1){
+				  if(this.isOpen(row, col-1))WQU.union(row+col*DIMENSION-DIMENSION, row+(col-1)*DIMENSION-DIMENSION);
+			  }
+			  if(col<DIMENSION){
+				  if(this.isOpen(row, col+1))WQU.union(row+col*DIMENSION-DIMENSION, row+(col+1)*DIMENSION-DIMENSION);
+			  }
+			  
+			  // StdOut.println(grids[row][col]+" is opened ");
+		  }
+		  else throw new IllegalArgumentException();		   
+	   }
+	   public boolean isOpen(int row, int col) throws IllegalArgumentException{  // is site (row, col) open?
+		   if(row>0&&row<=DIMENSION&&col>0&&col<=DIMENSION){
+				  return grids[row-1][col-1]==0;
+			  }
+			  else throw new IllegalArgumentException();
+	   }
+	   public boolean isFull(int row, int col){  // is site (row, col) full?
+		   if(row>0&&row<=DIMENSION&&col>0&&col<=DIMENSION){
+				 return WQU.connected(0, row+col*DIMENSION-DIMENSION);
+			  }
+			  else throw new IllegalArgumentException();
+	   }
+	   public     int numberOfOpenSites() {      // number of open sites
+		   return this.OPEN;
+	   }
+	   public boolean percolates(){              // does the system percolate?
+		   boolean sign=false;
+		  // for(int i=0;i<DIMENSION;i++){			   sign=sign||traversal(1, i+1,i+1);		   }
+		   for(int i=0;i<DIMENSION;i++){			   sign=sign||isFull(DIMENSION, i+1);		   }
+		
+		   return sign;
+	   }
+
+	/*   public boolean traversal(int x, int y,int mark){
+		   if(this.isOpen(x, y)&&grids[x-1][y-1]!=mark){
+			   grids[x-1][y-1]=mark;
+			   if(x==1){
+				   return traversal(x+1,y,mark);
+			   }
+			   if(x==DIMENSION){
+				   
+				   return true;
+			   }else{
+				   if(y==1)  return traversal(x+1,y,mark)||traversal(x,y+1,mark)||false; 
+				   else if(y==DIMENSION) return traversal(x+1,y,mark)||traversal(x,y-1,mark)||false;
+					  else{
+						  return traversal(x+1,y,mark)|| traversal(x,y-1,mark)|| traversal(x,y+1,mark);
+						  }
+				   }
+		   }
+		   else{ return false; }
+		  }
+		  
+		*/
+	   
+	   public double test(){
+	  // public static void main(String[] args){
+		   Percolation p=this;//=new Percolation(10);//
+		   //int i=0;
+		   int x=0;
+		   int y=0;
+		   while(!p.percolates()&&p.numberOfOpenSites()<p.DIMENSION* p.DIMENSION){
+			   //do{
+			   x=(int) StdRandom.uniform(1, p.DIMENSION+1);
+			   y=(int) StdRandom.uniform(1, p.DIMENSION+1);
+			   //}
+			   if(!p.isOpen(x, y))	  
+			   {
+				   p.open(x, y);
+				   
+				   
+			   }
+			   }
+		   /*
+		   for(int[] lamba: p.grids){
+			   for(int l: lamba){
+				   System.out.print("["+l+"] ");
+			   }
+			   System.out.println("");
+		   }
+		   */
+		 // System.out.println(i);
+		  StdOut.println("the threshold of P is "+(double)p.numberOfOpenSites()/(p.DIMENSION*p.DIMENSION));
+		  return (double)p.numberOfOpenSites()/(p.DIMENSION*p.DIMENSION);
+	   }
+}
