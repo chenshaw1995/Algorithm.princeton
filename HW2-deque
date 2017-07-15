@@ -1,0 +1,143 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+
+
+public class Deque<Item> implements Iterable<Item> {
+ /*
+  * circled doubl-linked list
+  * size
+  * head,  sentienel node,  can not be accessed.
+  * item, next, prev
+  */
+   private Node head;
+   private int size;
+   public Deque()            {               // construct an empty deque
+	head = new Node(null, head, head);
+    head.setPrev(head);
+    head.setNext(head);//core 
+    size = 0;
+   }
+   public boolean isEmpty() {                 // is the deque empty?
+    return size == 0;
+   }
+   public int size()    {                    // return the number of items on the deque
+    return size;
+   }
+   public void addFirst(Item item) {         // add the item to the front
+    if  (item == null)throw new IllegalArgumentException();
+     Node n=new Node(item, head, head.next());
+     head.setNext(n);
+     n.next().setPrev(n);
+     size++;
+   }
+   public void addLast(Item item)    {       // add the item to the end
+    if (item == null)throw new IllegalArgumentException();
+     Node n=new Node(item,  head.prev(), head);
+      head.setPrev(n) ;
+      n.prev().setNext(n) ;
+      size++;   
+   }
+   public Item removeFirst()    {            // remove and return the item from the front
+    if (size() == 0)throw new NoSuchElementException();
+    else{
+     Node t = head.next();
+     t.next().setPrev( head) ;
+     head.setNext(t.next()) ;
+     t.setNext(null);
+     t.setPrev(null);
+     size--;
+     return t.item();
+    }
+   }
+   public Item removeLast()    {             // remove and return the item from the end
+    if (size() == 0)throw new NoSuchElementException();
+    else
+    {
+     Node t = head.prev();
+     t.prev().setNext(head);
+     head.setPrev(t.prev());
+     t.setNext(null);
+     t.setPrev(null);
+     size--;
+     return t.item();
+    }
+   }
+   private Node nextNode(Node p) {
+    if (p.next() != head) return p.next();
+    else return null;
+   }
+  /* private Node Prev(Node p){
+    if (p.prev()!= head)return p.prev();
+    else return null;
+   }
+   */
+   public Iterator<Item> iterator() {         // return an iterator over items in order from front to end
+    return new DequeIterator();
+   }
+   public static void main(String[] args) {   // unit testing (optional)
+	   int num = Integer.parseInt(args[0]);
+       Deque<String> p = new Deque<String>();
+       StdOut.println("num: " + num + "input a sequence of string: ");
+       while(num-- > 0) {
+        String s=StdIn.readString();
+        p.addLast(s);
+        System.out.println(num + " ok");
+        }
+       num = 3; 
+       while(num-->0) {
+        StdOut.println(p.removeLast());
+        }
+   }
+   
+  private class DequeIterator implements Iterator<Item> {
+  
+  private Node p = head;
+
+  public boolean hasNext() {
+   return nextNode(p) != null;
+  }
+
+  public Item next() {
+   if (nextNode(p) != null){
+    Item i =  nextNode(p).item();
+    p = nextNode(p);
+    return i;
+   }
+   else throw new NoSuchElementException();
+  }
+
+  public void remove(){
+   throw new UnsupportedOperationException();
+  }
+  
+ }
+private class Node{
+    private Item item;
+    private Node prev;
+    private Node next;
+    Node next() {
+    	return next;
+    }
+    void setNext(Node n) {
+    	next=n;
+    }
+    Node prev() {
+    	return prev;
+    }
+    void setPrev(Node p) {
+    	prev=p;
+    }
+    Item item(){
+    	return item;
+    }
+     Node(Item i,  Node m,  Node n){
+      item = i;
+      prev = m;
+      next = n;
+     }
+ }
+}
+
