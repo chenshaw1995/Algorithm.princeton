@@ -1,0 +1,21 @@
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+
+public class Permutation {
+
+       public static void main(String[] args) {
+   	    int num = Integer.parseInt(args[0]);
+        RandomizedQueue<String> p = new RandomizedQueue<String>();
+       // StdOut.println("num: " + num + "input a sequence of string: ");
+        while(num-- > 0) {
+         String s=StdIn.readString();
+         p.enqueue(s);
+        // System.out.println(num + " ok");
+         }
+        //num = 3;
+        while(num-->0) {
+         StdOut.println(p.dequeue());
+         }
+        
+    }
+}
