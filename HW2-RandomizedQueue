@@ -1,0 +1,123 @@
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
+import edu.princeton.cs.algs4.StdIn;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
+public class RandomizedQueue<Item> implements Iterable<Item> {
+ /*
+  * ArrayList
+  * size = tail-head
+  *  
+  * tail enqueue&dequeue
+  */
+   private Object[] queue;
+   private int head;
+   private int tail;
+   private int defaultSize = 4;
+   public RandomizedQueue() {                 // construct an empty randomized queue
+    queue = new Object[defaultSize];
+    head = 0;
+    tail = 0;
+   }
+   public boolean isEmpty() {                 // is the queue empty?
+    return (tail - head) == 0;
+   }
+   public int size()  {                      // return the number of items on the queue
+    return tail-head;
+   }
+   public void enqueue(Item item)    {       // add the item
+    if(item == null)throw new IllegalArgumentException();
+    if(tail != queue.length-1){
+     queue[tail] = item;
+     tail++;
+    }
+    else {
+     int n = 0;
+     Object[] q = new Object[2*queue.length];
+     for(int i = head; i<tail; i++){
+      q[n++] = queue[i];
+     }
+     tail = tail-head;
+     head = 0;
+     queue = q;
+     queue[tail] = item;
+     tail++;
+    }
+   }
+public Item dequeue(){                    // remove and return a random item
+    if(head == tail)throw new NoSuchElementException();
+    int i = StdRandom.uniform(tail-head);
+    if(tail <= queue.length / 3){
+     int n = 0;
+     Object[] q = new Object[queue.length / 2];
+     for(int m = head;m<tail;m++){
+      q[n++] = queue[m];
+     }
+     tail = tail-head;
+     head = 0;
+     queue = q;
+    }
+    Object temp;
+    temp = queue[i];
+    queue[i] = queue[--tail];
+    queue[tail] = null;
+    return (Item) temp; 
+   }
+   public Item sample()   {                  // return (but do not remove) a random item
+    if(head == tail)throw new NoSuchElementException();
+    int i = StdRandom.uniform(tail - head);
+    return (Item) queue[i];
+   }
+   public Iterator<Item> iterator() {        // return an independent iterator over items in random order
+    return   new Riterator();
+   }
+   
+   public static void main(String[] args){   // unit testing (optional)
+	   if(args==null){
+		   args=new String[5];
+		   StdOut.println("input:");
+		   for(int i=0;i<5;i++){
+			   args[i]=StdIn.readString();
+		   }
+	   }
+    RandomizedQueue<String> q=new RandomizedQueue<String>();
+    for(int i=0;i<args.length;i++){
+    	q.enqueue(args[i]);
+    }
+    Iterator iq1=q.iterator();
+    Iterator iq2=q.iterator();
+    
+    while(iq1.hasNext()){
+    	StdOut.println(iq1.next());
+    }
+    StdOut.println("iq2:");
+    while(iq2.hasNext()){
+    	StdOut.println(iq2.next());
+    }
+   }
+
+private class Riterator implements Iterator<Item> {
+Object[] q=queue.clone();
+int p = head;
+
+ public boolean hasNext() {
+   return p!=tail;//
+ }
+
+ public Item next() {
+  if (p == tail)throw new NoSuchElementException();
+  int i = StdRandom.uniform(p, tail);
+  Object tempt=q[i];
+  q[i]=q[p];
+  q[p]=tempt;
+  return (Item) q[p++];
+
+ }
+ public void remove() {
+  throw new UnsupportedOperationException();
+ }
+    
+   }
+}
