@@ -5,3 +5,9 @@ Yes, this is a common bug pattern in Java.
 (Another common one is comparing a Board object with a SolverNode object using either equals() or ==).
 I've added a check in checkstyle to produce a custom warning if Solver never calls equals(). 
 That might save some future students some unnecessary grief.
+
+Oh man that was painful. 
+I'm new to Java, so I was under the impression if you implement the "equals" method,
+that Java would automatically call it when you use it in a comparison (like an operator overload); 
+however, it wasn't. So my `goalSN.parent().value() != neighbor` optimization was always failing.
+I just manually called the equals method, and now it works.
